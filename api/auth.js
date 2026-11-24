@@ -24,7 +24,7 @@ module.exports = async (req, res) => {
       return res.status(409).json({ error: 'Account already exists' });
     }
     const hash = await bcrypt.hash(password, 10);
-    global.ggUsers.set(cleanUser, { username: cleanUser, hash, scripts: [] });
+    global.ggUsers.set(cleanUser, { username: cleanUser, hash });
     const token = jwt.sign({ username: cleanUser }, JWT_SECRET, { expiresIn: '7d' });
     return res.status(201).json({ token, username: cleanUser });
   }
