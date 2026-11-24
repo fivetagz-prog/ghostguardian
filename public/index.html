@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ghost Guardian — Roblox Lua Protection</title>
+  <link rel="stylesheet" href="/style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="bg-grid"></div>
+  <div class="glow-orb orb-1"></div>
+  <div class="glow-orb orb-2"></div>
+
+  <nav class="navbar">
+    <div class="brand">
+      <svg class="ghost-logo" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="ggGrad" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#8B5CF6" />
+            <stop offset="100%" stop-color="#06B6D4" />
+          </linearGradient>
+        </defs>
+        <path d="M32 6C18.745 6 8 16.745 8 30V54L16 48L24 54L32 48L40 54L48 48L56 54V30C56 16.745 45.255 6 32 6Z" fill="url(#ggGrad)" fill-opacity="0.18" stroke="url(#ggGrad)" stroke-width="3" stroke-linejoin="round"/>
+        <path d="M22 28C22 25.7909 23.7909 24 26 24C28.2091 24 30 25.7909 30 28V31C30 33.2091 28.2091 35 26 35C23.7909 35 22 33.2091 22 31V28Z" fill="#06B6D4"/>
+        <path d="M34 28C34 25.7909 35.7909 24 38 24C40.2091 24 42 25.7909 42 28V31C42 33.2091 40.2091 35 38 35C35.7909 35 34 33.2091 34 31V28Z" fill="#06B6D4"/>
+        <path d="M32 12L44 17V27C44 35.5 38.8 42.6 32 45C25.2 42.6 20 35.5 20 27V17L32 12Z" stroke="#FFFFFF" stroke-opacity="0.35" stroke-width="1.5"/>
+      </svg>
+      <span>GHOST <strong>GUARDIAN</strong></span>
+    </div>
+    <div class="nav-actions" id="navUserArea">
+      <span class="badge-live"><span class="pulse-dot"></span> SHIELD ACTIVE</span>
+      <button class="btn-ghost" id="openAuthBtn">Sign In</button>
+    </div>
+  </nav>
+
+  <main class="container">
+    <header class="hero">
+      <div class="pill-tag">V1.0 SERVER-SIDE LOADER &amp; VM SHIELD</div>
+      <h1>Zero-Leak Roblox Lua Protection</h1>
+      <p>Server-side anti-fetch filtering drops unauthorized HTTP clients while wrapping your payload in multi-layer anti-tamper execution.</p>
+    </header>
+
+    <section class="workspace-card">
+      <div class="editor-header">
+        <div class="window-dots">
+          <span></span><span></span><span></span>
+        </div>
+        <span class="file-label">payload_source.lua</span>
+        <span class="char-counter" id="charCount">0 bytes</span>
+      </div>
+
+      <textarea id="luaInput" spellcheck="false" placeholder="Enter your Roblox Lua script here..."></textarea>
+
+      <div class="shield-modules">
+        <label class="module-toggle">
+          <input type="checkbox" id="antiBootstrap" checked />
+          <div class="toggle-box">
+            <div class="toggle-title">Anti-Bootstrap</div>
+            <div class="toggle-desc">Blocks Studio &amp; fake environments</div>
+          </div>
+        </label>
+
+        <label class="module-toggle">
+          <input type="checkbox" id="antiDump" checked />
+          <div class="toggle-box">
+            <div class="toggle-title">Anti-Dump</div>
+            <div class="toggle-desc">Neutralizes getgc &amp; debug hooks</div>
+          </div>
+        </label>
+
+        <label class="module-toggle">
+          <input type="checkbox" id="antiEnvLog" checked />
+          <div class="toggle-box">
+            <div class="toggle-title">Anti-EnvLog</div>
+            <div class="toggle-desc">Detects metatable _G / getgenv spies</div>
+          </div>
+        </label>
+
+        <label class="module-toggle">
+          <input type="checkbox" id="antiHook" checked />
+          <div class="toggle-box">
+            <div class="toggle-title">Anti-Hook</div>
+            <div class="toggle-desc">Verifies C-closure integrity on HttpGet</div>
+          </div>
+        </label>
+      </div>
+
+      <div class="action-bar">
+        <button id="protectBtn" class="btn-protect">
+          <span class="btn-glow"></span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          </svg>
+          <span>Protect</span>
+        </button>
+      </div>
+
+      <div class="output-panel hidden" id="outputPanel">
+        <div class="output-header">
+          <span>PROTECTED LOADSTRING</span>
+          <button id="copyBtn" class="btn-copy">Copy Loader</button>
+        </div>
+        <pre id="loadstringOutput">loadstring(game:HttpGet("https://ghostguardian.vercel.app/v1/loaders/..."))()</pre>
+      </div>
+    </section>
+  </main>
+
+  <div class="modal-backdrop hidden" id="authModal">
+    <div class="modal-card">
+      <button class="modal-close" id="closeAuthBtn">&times;</button>
+      <div class="modal-tabs">
+        <button class="tab-btn active" data-tab="login">Login</button>
+        <button class="tab-btn" data-tab="register">Create Account</button>
+      </div>
+      <form id="authForm">
+        <div class="input-group">
+          <label>Username</label>
+          <input type="text" id="authUsername" required minlength="3" placeholder="ghost_dev" />
+        </div>
+        <div class="input-group">
+          <label>Password</label>
+          <input type="password" id="authPassword" required minlength="5" placeholder="••••••••" />
+        </div>
+        <p class="auth-error hidden" id="authError"></p>
+        <button type="submit" class="btn-protect full-width" id="authSubmitBtn">Sign In</button>
+      </form>
+    </div>
+  </div>
+
+  <div id="toast" class="toast hidden"></div>
+  <script src="/app.js"></script>
+</body>
+</html>
