@@ -1,4 +1,4 @@
-global.ggScripts = global.ggScripts || new Map();
+global.ggStore = global.ggStore || { byUser: new Map(), latest: null };
 
 function isAntiFetchValid(req) {
   const ua = (req.headers['user-agent'] || '').toLowerCase();
@@ -39,13 +39,13 @@ module.exports = async (req, res) => {
   }
 
   const { id } = req.query;
-  const entry = global.ggScripts.get(id);
+  const payload = (id && global.ggStore.byUser.get(String(id).toLowerCase())) || global.ggStore.latest;
 
   res.setHeader('Content-Type', 'text/plain; charset=utf-8');
 
-  if (!entry) {
+  if (!payload) {
     return res.status(404).send('');
   }
 
-  return res.status(200).send(entry.payload);
+  return res.status(200).send(payload);
 };
