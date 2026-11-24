@@ -1,13 +1,9 @@
 global.ggScripts = global.ggScripts || new Map();
 
 function isAntiFetchValid(req) {
-  const ua = req.headers['user-agent'] || '';
-  const robloxId = req.headers['roblox-id'];
+  const ua = (req.headers['user-agent'] || '').toLowerCase();
   const accept = (req.headers['accept'] || '').toLowerCase();
-
-  if (!robloxId || !/^\d+$/.test(String(robloxId))) {
-    return false;
-  }
+  const robloxId = req.headers['roblox-id'] || req.headers['x-roblox-id'];
 
   if (
     req.headers['sec-fetch-site'] ||
@@ -16,14 +12,16 @@ function isAntiFetchValid(req) {
     req.headers['sec-ch-ua'] ||
     req.headers['referer'] ||
     req.headers['origin'] ||
-    req.headers['x-forwarded-host'] ||
-    req.headers['cookie'] ||
     accept.includes('text/html')
   ) {
     return false;
   }
 
-  return /^Roblox\/WinInet\b/i.test(ua) || /^RobloxStudio\b/i.test(ua) || ua === 'Roblox/WinInet';
+  if (robloxId && !/^\d+$/.test(String(robloxId))) {
+    return false;
+  }
+
+  return ua.includes('roblox') || Boolean(robloxId);
 }
 
 module.exports = async (req, res) => {
